@@ -22,24 +22,22 @@ export async function POST(req) {
 
         while (cycle <= total_cycle) {
             round++;
-        
-            let net_gain = 0;
-            let isMerged = false;
 
-          
-            
-                if (cycle > total_cycle) break;
-                if (remaining_from_divisor === 0){
-                    remaining_from_divisor = divisor;
-                    cycle++;
-                } 
-                net_gain = modular;
+            let net_gain;
+            if (remainder_mod_modular > 0) {
+                let gap_fill = modular - remainder_mod_modular;
+                net_gain = Math.min(gap_fill, remaining_from_divisor);
                 accumulated_value += net_gain;
-                remainder_mod_modular = remaining_from_divisor < modular ? remaining_from_divisor % modular : 0 ;
-                remaining_to_modular = remainder_mod_modular > 0 ? modular - remainder_mod_modular : 0;
-                if ( remainder_mod_modular > 0 ) isMerged = true;
                 remaining_from_divisor -= net_gain;
-            
+                remainder_mod_modular = (remainder_mod_modular + net_gain) % modular;
+                remaining_to_modular = remainder_mod_modular > 0 ? modular - remainder_mod_modular : 0;
+            } else {
+                net_gain = Math.min(modular, remaining_from_divisor);
+                accumulated_value += net_gain;
+                remaining_from_divisor -= net_gain;
+                remainder_mod_modular = net_gain % modular;
+                remaining_to_modular = remainder_mod_modular > 0 ? modular - remainder_mod_modular : 0;
+            }
 
             results.push({
                 round,
@@ -48,23 +46,14 @@ export async function POST(req) {
                 accumulated_value,
                 remaining_from_divisor,
                 remainder_mod_modular,
-                remaining_to_modular,
-                isMerged
+                remaining_to_modular
             });
 
-            if (results.length === 0) {
-                return Response.json({ error: "No results generated." }, { status: 400 });
-            }
-
-            console.log("results :", results);
-        
-            // If divisor is used up, start new cycle
             if (remaining_from_divisor === 0) {
-                if (cycle > total_cycle) break;
                 remaining_from_divisor = divisor;
                 cycle++;
             }
-        }        
+        }
 
         return Response.json({ gcd_value, total_cycle, results });
 

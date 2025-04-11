@@ -1,9 +1,18 @@
-import React from "react";
+import React, { useRef, useEffect }  from "react";
 
-const ResultTable = ({ result }) => {
+const ResultTable = ({ result, gcd,  shouldJump, setShouldJump }) => {
+    const remainderRef = useRef(null);
+
   if (!Array.isArray(result)) {
     return <p>Invalid data format. Expected an array of results.</p>;
   }
+
+  useEffect(() => {
+    if ( shouldJump && remainderRef.current) {
+      remainderRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      setShouldJump(false); // Reset the flag after jumping
+    }
+  }, [shouldJump, setShouldJump]);
 
   return (
     <div style={styles.container}>
@@ -21,39 +30,61 @@ const ResultTable = ({ result }) => {
         </div>
 
         {/* Data Rows */}
-        {result.map((item, index) => (
+        {result.map((item, index) => {
+            const isHighlighted = item.remainder_mod_modular === gcd;
+            const isMergedRow = item.isMerged;
+
+            return (
+
           <React.Fragment key={index}>
             {/* Main Row */}
-            <div style={styles.row}>
+            {/* <div style={styles.row}> */}
+            <div
+                ref={isHighlighted ? remainderRef : null}
+                style={{
+                  ...styles.row,
+                //   backgroundColor: isHighlighted ? "#ffeb99" : "transparent", // Highlight if matches gcd_value
+                backgroundColor: isHighlighted
+                ? "#ffeb99"
+                : isMergedRow
+                ? "#d9f9d9"
+                : "transparent",
+              borderLeft: isMergedRow ? "4px solid #33cc33" : "none", // ✅ NEW optional highlight
+                }}
+              >
               <div style={styles.cell}>{item.round}</div>
-              <div style={styles.cell}>{item.cycle}</div>
+              <div style={styles.cell}>{item.cycle}
+              {isMergedRow && (
+                    <div style={{ fontSize: "11px", color: "#33aa33" }}>[Merged]</div>
+                )}
+              </div>
               <div style={styles.cell}>{item.net_gain}</div>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                 <div style={styles.cell}>{item.accumulated_value}</div>
                 <div style={styles.cellExplanation}>{`(${index > 0 ? result[index - 1].accumulated_value : 0} + ${item.net_gain})`}</div>
               </div>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <div style={styles.cell}>{item.remaining_from_123}</div>
+                <div style={styles.cell}>{item.remaining_from_divisor}</div>
                 <div style={styles.cellExplanation}>
                 {`(${
                     index > 0
-                    ? result[index - 1].remaining_from_123 === 0
+                    ? result[index - 1].remaining_from_divisor === 0
                         ? 123
-                        : result[index - 1].remaining_from_123
+                        : result[index - 1].remaining_from_divisor
                     : 123
                 } - ${item.net_gain})`}
                 </div>
               </div>
-              <div style={styles.cell}>{item.remainder_mod_45}</div>
+              <div style={styles.cell}>{item.remainder_mod_modular}</div>
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                <div style={styles.cell}>{item.remaining_to_45}</div>
-                { result[index].remainder_mod_45 > 0 ?
+                <div style={styles.cell}>{item.remaining_to_modular}</div>
+                { result[index].remainder_mod_modular > 0 ?
               <div style={styles.cellExplanation}>
                 {`(${
                     index > 0 
                     ?
-                    result[index].remainder_mod_45 > 0
-                        ? `45 - ${item.remainder_mod_45}`
+                    result[index].remainder_mod_modular > 0
+                        ? `45 - ${item.remainder_mod_modular}`
                         : ""
                     : ""
                 })`}
@@ -64,7 +95,8 @@ const ResultTable = ({ result }) => {
               </div>
             </div>
           </React.Fragment>
-        ))}
+          );
+})}
       </div>
     </div>
   );
@@ -92,14 +124,6 @@ const styles = {
     flexDirection: "row",
     borderBottom: "1px solid #ddd",
     padding: "10px 5px",
-  },
-  explanationRow: {
-    display: "flex",
-    flexDirection: "row",
-    backgroundColor: "#e0f7ff", // Light blue background
-    color: "#0066cc", // Slightly darker blue text for contrast
-    fontSize: "12px",
-    padding: "2px 2px",
   },
   cell: {
     flex: 1,
