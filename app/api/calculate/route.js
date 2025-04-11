@@ -10,6 +10,7 @@ export async function POST(req) {
         const gcd = (a, b) => (b === 0 ? a : gcd(b, a % b));
         const gcd_value = gcd(modular, divisor);
         const total_cycle = Math.floor(modular / gcd_value);
+        const total_round = Math.floor(divisor / gcd_value);
 
         let round = 0;
         let accumulated_value = 0;
@@ -26,21 +27,20 @@ export async function POST(req) {
             let net_gain = 0;
             let isMerged = false;
 
-          
-            
-                if (cycle > total_cycle) break;
-                if (remaining_from_divisor === 0){
-                    remaining_from_divisor = divisor;
-                    cycle++;
-                } 
-                net_gain = modular;
-                accumulated_value += net_gain;
-                remainder_mod_modular = remaining_from_divisor < modular ? remaining_from_divisor % modular : 0 ;
-                remaining_to_modular = remainder_mod_modular > 0 ? modular - remainder_mod_modular : 0;
-                if ( remainder_mod_modular > 0 ) isMerged = true;
-                remaining_from_divisor -= net_gain;
-            
+            if (cycle > total_cycle) break;
+         
+            remainder_mod_modular = remaining_from_divisor < modular ? remaining_from_divisor : 0;
+            remaining_from_divisor = remaining_from_divisor > modular ? remaining_from_divisor -= modular : 0;
+            remaining_to_modular = remainder_mod_modular > 0 ? modular - remainder_mod_modular : 0;
+            net_gain = modular ;
+            accumulated_value += net_gain;
 
+            // If divisor is used up, start new cycle
+            if(remaining_from_divisor === 0) {
+                remaining_from_divisor =  divisor - remaining_to_modular;
+                isMerged = true;
+            }
+            
             results.push({
                 round,
                 cycle,
@@ -52,21 +52,20 @@ export async function POST(req) {
                 isMerged
             });
 
+            if(isMerged){
+                cycle++;
+            }
+
             if (results.length === 0) {
                 return Response.json({ error: "No results generated." }, { status: 400 });
             }
 
             console.log("results :", results);
         
-            // If divisor is used up, start new cycle
-            if (remaining_from_divisor === 0) {
-                if (cycle > total_cycle) break;
-                remaining_from_divisor = divisor;
-                cycle++;
-            }
+            
         }        
 
-        return Response.json({ gcd_value, total_cycle, results });
+        return Response.json({ gcd_value, total_round, total_cycle, results });
 
     } catch (error) {
         return Response.json({ error: "Internal Server Error" }, { status: 500 });

@@ -29,15 +29,15 @@ useEffect(() => {
     if (!equationDetails) return;
   
     const x = equationDetails.cycle + equationDetails.total_cycle * k;
-    const y = -(30 + equationDetails.round * k);
+    const y = -(equationDetails.round + equationDetails.total_round * k);
     const computedValue = divisor * x + modular * y;
   
     // Step-by-step breakdown
-    const step1 = `= ${divisor}(${equationDetails.cycle} + ${equationDetails.total_cycle}(${k})) + ${modular}(-(${30} + ${equationDetails.round})(${k}))`;
+    const step1 = `= ${divisor}(${equationDetails.cycle} + ${equationDetails.total_cycle}(${k})) + ${modular}(-(${equationDetails.round} + ${equationDetails.total_round})(${k}))`;
     // const step2 = `${divisor}(${x}) + ${modular}(${y}) = ${equationDetails.gcd_value}`;
-    const step2 = `= ${divisor}(${equationDetails.cycle}) + ${divisor}(${equationDetails.total_cycle}(${k})) - ${modular}(${30}) - ${modular}(${equationDetails.round}(${k}))`;
-    const step3 = `= ${divisor * equationDetails.cycle} + ${divisor * equationDetails.total_cycle * k} - ${modular * 30} - ${modular * equationDetails.round * k}`;
-    const step4 = `= ${divisor * equationDetails.cycle + divisor * equationDetails.total_cycle * k - modular * 30 - modular * equationDetails.round * k}`;
+    const step2 = `= ${divisor}(${equationDetails.cycle}) + ${divisor}(${equationDetails.total_cycle}(${k})) - ${modular}(${equationDetails.round}) - ${modular}(${equationDetails.round}(${k}))`;
+    const step3 = `= ${divisor * equationDetails.cycle} + ${divisor * equationDetails.total_cycle * k} - ${modular * equationDetails.round} - ${modular * equationDetails.round * k}`;
+    const step4 = `= ${divisor * equationDetails.cycle + divisor * equationDetails.total_cycle * k - modular * equationDetails.round - modular * equationDetails.round * k}`;
   
     setComputedSteps({ step1, step2, step3, step4, computedValue });
   
@@ -78,6 +78,7 @@ const handleSubmit = async (e) => {
          // Compute GCD dynamically
          const gcd_value = data.gcd_value;
          const total_cycle = data.total_cycle;
+         const total_round = data.total_round;
 
            // Extract cycle number where remainder == gcd
         let cycle = null;
@@ -92,7 +93,7 @@ const handleSubmit = async (e) => {
                 }
             }
         }
-        setEquationDetails({ cycle, total_cycle, round, gcd_value });
+        setEquationDetails({ cycle, total_cycle, round, total_round, gcd_value });
 
         // New logic: Summing up zero and nonzero values
         let zerosTilGCD = 0;
@@ -222,7 +223,7 @@ const computeEquationResult = () => {
           <p className="text-lg font-semibold">Equation :</p>
           <p>{divisor}x + {modular}y = {equationDetails.gcd_value}</p>
           <p className="text-lg font-semibold">General Equation :</p>
-          <p>{divisor}({equationDetails.cycle} + {equationDetails.total_cycle}k) + {modular}(-(30 + {equationDetails.round})k) = {equationDetails.gcd_value}</p>
+          <p>{divisor}({equationDetails.cycle} + {equationDetails.total_cycle}k) + {modular}(-({equationDetails.round} + {equationDetails.total_round})k) = {equationDetails.gcd_value}</p>
 
 
          {/* User input for k */}
@@ -263,7 +264,7 @@ const computeEquationResult = () => {
       {equationDetails &&
         <div className="mt-4 p-4 bg-gray-50 rounded-lg shadow-md">
         <p className="text-lg font-semibold">General Equation :</p>
-        <p>{divisor}({equationDetails.cycle} + {equationDetails.total_cycle}k) + {modular}(-(30 + {equationDetails.round})k) = {equationDetails.gcd_value}</p>
+        <p>{divisor}({equationDetails.cycle} + {equationDetails.total_cycle}k) + {modular}(-({equationDetails.round} + {equationDetails.total_round})k) = {equationDetails.gcd_value}</p>
             <p className="text-lg font-semibold">Explanation:</p>
             <p>Total Cycle : {equationDetails.total_cycle}</p>
             <p>gcd cycle#: {equationDetails.cycle}</p>
