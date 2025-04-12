@@ -33,11 +33,11 @@ useEffect(() => {
     const computedValue = divisor * x + modular * y;
   
     // Step-by-step breakdown
-    const step1 = `= ${divisor}(${equationDetails.cycle} + ${equationDetails.total_cycle}(${k})) + ${modular}(-(${equationDetails.round} + ${equationDetails.total_round})(${k}))`;
+    const step1 = `= ${divisor}(${equationDetails.cycle} + ${equationDetails.total_cycle}(${k})) + ${modular}(-(${equationDetails.minus_round} + ${equationDetails.total_round})(${k}))`;
     // const step2 = `${divisor}(${x}) + ${modular}(${y}) = ${equationDetails.gcd_value}`;
-    const step2 = `= ${divisor}(${equationDetails.cycle}) + ${divisor}(${equationDetails.total_cycle}(${k})) - ${modular}(${equationDetails.round}) - ${modular}(${equationDetails.round}(${k}))`;
-    const step3 = `= ${divisor * equationDetails.cycle} + ${divisor * equationDetails.total_cycle * k} - ${modular * equationDetails.round} - ${modular * equationDetails.round * k}`;
-    const step4 = `= ${divisor * equationDetails.cycle + divisor * equationDetails.total_cycle * k - modular * equationDetails.round - modular * equationDetails.round * k}`;
+    const step2 = `= ${divisor}(${equationDetails.cycle}) + ${divisor}(${equationDetails.total_cycle}(${k})) - ${modular}(${equationDetails.minus_round}) - ${modular}(${equationDetails.total_round}(${k}))`;
+    const step3 = `= ${divisor * equationDetails.cycle} + ${divisor * equationDetails.total_cycle * k} - ${modular * equationDetails.minus_round} - ${modular * equationDetails.total_round * k}`;
+    const step4 = `= ${divisor * equationDetails.cycle + divisor * equationDetails.total_cycle * k - modular * equationDetails.minus_round - modular * equationDetails.total_round * k}`;
   
     setComputedSteps({ step1, step2, step3, step4, computedValue });
   
@@ -83,17 +83,19 @@ const handleSubmit = async (e) => {
            // Extract cycle number where remainder == gcd
         let cycle = null;
         let round = null;
+        let minus_round = null;
 
         if (data.results) {
             for (let i = 0; i < data.results.length; i++) {
                 if (data.results[i].remainder_mod_modular === gcd_value) { // Use dynamic GCD
                     cycle = data.results[i].cycle;
                     round = i + 1; // +1 because i is zero-based which started from [0], and the real round number started from 1
+                    minus_round = i ; // -1 ( +1 - 1 ) here because we minus the number of rounds before the round# of the remainder 3, meaning the round# of remainder 3 is not counted
                     break;
                 }
             }
         }
-        setEquationDetails({ cycle, total_cycle, round, total_round, gcd_value });
+        setEquationDetails({ cycle, total_cycle, round, minus_round, total_round, gcd_value });
 
         // New logic: Summing up zero and nonzero values
         let zerosTilGCD = 0;
@@ -170,7 +172,7 @@ const computeEquationResult = () => {
     console.log(" equationDetails.total_cycle:", equationDetails.total_cycle)
     const x = equationDetails.cycle + equationDetails.total_cycle * k;
     console.log("x:", x);
-    const y = -(30 + equationDetails.round * k);
+    const y = -(equationDetails.minus_round + equationDetails.total_round * k);
     console.log("y:", y);
     const computedValue = divisor * x + modular * y;
     console.log("computedValue:", computedValue);
@@ -277,7 +279,7 @@ const computeEquationResult = () => {
             <p>Therefore the last cycle of {divisor} would be {divisor}-{sumNonZerosTilGCD-divisor} = {divisor-(sumNonZerosTilGCD-divisor)}</p>
             <br/>
             <p>Total Count of Zeros: {totalZeros}</p>
-            <p>Sum of Non-Zero Values: {totalSumNonZeros}</p>
+            <p>Sum of Non-Zero Values: {totalSumZeros}</p>
             <p>Total Numbers of Non-Zero Values Til GCD : {totalNonZeroCount}</p>
         </div>
       }
