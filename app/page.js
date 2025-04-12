@@ -225,7 +225,7 @@ const computeEquationResult = () => {
           <p className="text-lg font-semibold">Equation :</p>
           <p>{divisor}x + {modular}y = {equationDetails.gcd_value}</p>
           <p className="text-lg font-semibold">General Equation :</p>
-          <p>{divisor}({equationDetails.cycle} + {equationDetails.total_cycle}k) + {modular}(-({equationDetails.round} + {equationDetails.total_round})k) = {equationDetails.gcd_value}</p>
+          <p>{divisor}({equationDetails.cycle} + {equationDetails.total_cycle}k) + {modular}(-({equationDetails.minus_round} + {equationDetails.total_round})k) = {equationDetails.gcd_value}</p>
 
 
          {/* User input for k */}
@@ -279,8 +279,8 @@ const computeEquationResult = () => {
             <p>Therefore the last cycle of {divisor} would be {divisor}-{sumNonZerosTilGCD-divisor} = {divisor-(sumNonZerosTilGCD-divisor)}</p>
             <br/>
             <p>Total Count of Zeros: {totalZeros}</p>
-            <p>Sum of Non-Zero Values: {totalSumZeros}</p>
-            <p>Total Numbers of Non-Zero Values Til GCD : {totalNonZeroCount}</p>
+            <p>Sum of Non-Zero Values: {totalSumNonZeros}</p>
+            <p>Total Numbers of Non-Zero Values : {totalNonZeroCount}</p>
         </div>
       }
       </div>
