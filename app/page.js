@@ -17,7 +17,14 @@ export default function Home() {
   const [totalSumNonZeros, setTotalSumNonZeros] = useState(0);
   const [nonZeroCountTilGCD, setNonZeroCountTilGCD] = useState(0);
   const [totalNonZeroCount, setTotalNonZeroCount] = useState(0);
+  const [deficit, setDeficit] = useState(0);
+  const [gcdValue, setGcdValue] = useState(null);
 
+useEffect(() => {
+  const remainder = divisor % modular;
+  const computedDeficit = modular - remainder;
+  setDeficit(computedDeficit);
+}, [divisor, modular]);
   
 //   const handleSubmit = (e) => {
 //     e.preventDefault();
@@ -77,6 +84,7 @@ const handleSubmit = async (e) => {
 
          // Compute GCD dynamically
          const gcd_value = data.gcd_value;
+         setGcdValue(gcd_value);
          const total_cycle = data.total_cycle;
          const total_round = data.total_round;
 
@@ -272,15 +280,36 @@ const computeEquationResult = () => {
             <p>gcd cycle#: {equationDetails.cycle}</p>
             <p>gcd round#: {equationDetails.round}</p>
             <br/>
+            <p className="mt-2">Deficit: {modular} - ({divisor} % {modular}) = {deficit}</p>
+            <p>meaning we need x<sub>0</sub> cycles of {divisor} before adding the last cycle of {divisor} to have {gcdValue} surplus</p>
+            <p> -{deficit}x<sub>0</sub> + {divisor} = {gcdValue}</p>
+            <p> -{deficit}x<sub>0</sub>  = {gcdValue} - {divisor}</p>
+            <p> -{deficit}x<sub>0</sub>  = {gcdValue-divisor}</p>
+            <p> x<sub>0</sub>  = {gcdValue-divisor} / -{deficit}</p>
+            <p> x<sub>0</sub>  = {(gcdValue-divisor )/ -deficit}</p>
+            <p> we need to add 1 ( representing the last cycle ) to the x<sub>0</sub> = {(gcdValue-divisor )/ -deficit} + 1 =  {(gcdValue-divisor )/ -deficit + 1 } cycle</p> 
+            <p>meaning the remainder {gcdValue} ( or gcd ) is at cycle {(gcdValue-divisor )/ -deficit + 1 }</p>
+            <p>Therefore, we could quickly calculate the x = {(gcdValue-divisor )/ -deficit + 1 }</p>
+            <br/>
+            <p>Likewise, we could quickly find y by substiting x into the equation</p>
+            <p>{divisor} x {(gcdValue-divisor )/ -deficit + 1 } - {modular}y = {gcdValue} </p>
+            <p>{divisor* ((gcdValue-divisor )/ -deficit + 1) } - {modular}y = {gcdValue} </p>
+            <p> {modular}y = {gcdValue} - {divisor* ((gcdValue-divisor )/ -deficit + 1) } </p>
+            <p> {modular}y = {gcdValue - (divisor* ((gcdValue-divisor )/ -deficit + 1)) } </p>
+            <p> y = {gcdValue - (divisor* ((gcdValue-divisor )/ -deficit + 1)) } / {modular} </p>
+            <p> y = {(gcdValue - (divisor* ((gcdValue-divisor )/ -deficit + 1))) / modular} </p>
+            <p> y = {(gcdValue - (divisor* ((gcdValue-divisor )/ -deficit + 1))) / modular} </p>
+            <br/>
+            <p className="text-lg font-semibold">Additional Inforamtion :</p>
             <p>Total Count of Zeros Til GCD: {zerosTilGCD}</p>
             <p>Sum of Non-Zero Values Til GCD: {sumNonZerosTilGCD} </p>
             <p>Total Numbers of Non-Zero Values Til GCD : {nonZeroCountTilGCD} ({equationDetails.round} - {zerosTilGCD})</p>
             <p>{sumNonZerosTilGCD} which is added up by remainders in that {nonZeroCountTilGCD} rounds, {sumNonZerosTilGCD}-{divisor} = {sumNonZerosTilGCD-divisor}</p>
             <p>Therefore the last cycle of {divisor} would be {divisor}-{sumNonZerosTilGCD-divisor} = {divisor-(sumNonZerosTilGCD-divisor)}</p>
             <br/>
-            <p>Total Count of Zeros: {totalZeros}</p>
-            <p>Sum of Non-Zero Values: {totalSumNonZeros}</p>
-            <p>Total Numbers of Non-Zero Values : {totalNonZeroCount}</p>
+            <p>Total Count of Zeros in all Cycles: {totalZeros}</p>
+            <p>Sum of Non-Zero Values in all Cycles: {totalSumNonZeros}</p>
+            <p>Total Numbers of Non-Zero Values in all Cycles : {totalNonZeroCount}</p>
         </div>
       }
       </div>
