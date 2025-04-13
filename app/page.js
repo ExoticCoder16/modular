@@ -274,7 +274,7 @@ const computeEquationResult = () => {
       {equationDetails &&
         <div className="mt-4 p-4 bg-gray-50 rounded-lg shadow-md">
         <p className="text-lg font-semibold">General Equation :</p>
-        <p>{divisor}({equationDetails.cycle} + {equationDetails.total_cycle}k) + {modular}(-({equationDetails.round} + {equationDetails.total_round})k) = {equationDetails.gcd_value}</p>
+        <p>{divisor}({equationDetails.cycle} + {equationDetails.total_cycle}k) + {modular}(-({equationDetails.minus_round} + {equationDetails.total_round})k) = {equationDetails.gcd_value}</p>
             <p className="text-lg font-semibold">Explanation:</p>
             <p>Total Cycle : {equationDetails.total_cycle}</p>
             <p>gcd cycle#: {equationDetails.cycle}</p>
@@ -292,7 +292,7 @@ const computeEquationResult = () => {
             <p>Therefore, we could quickly calculate the x = {(gcdValue-divisor )/ -deficit + 1 }</p>
             <br/>
             <p>Likewise, we could quickly find y by substiting x into the equation</p>
-            <p>{divisor} x {(gcdValue-divisor )/ -deficit + 1 } - {modular}y = {gcdValue} </p>
+            <p>{divisor}({(gcdValue-divisor )/ -deficit + 1 }) - {modular}y = {gcdValue} </p>
             <p>{divisor* ((gcdValue-divisor )/ -deficit + 1) } - {modular}y = {gcdValue} </p>
             <p> {modular}y = {gcdValue} - {divisor* ((gcdValue-divisor )/ -deficit + 1) } </p>
             <p> {modular}y = {gcdValue - (divisor* ((gcdValue-divisor )/ -deficit + 1)) } </p>
